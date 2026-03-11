@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import { glob } from "glob";
 
+import react from "@vitejs/plugin-react";
+
 export default defineConfig({
     build: {
         emptyOutDir: true,
@@ -16,6 +18,7 @@ export default defineConfig({
         devSourcemap: true
     },
     plugins: [
+        react(),
         {
             name: "remove-src-dir-from-path",
             enforce: "post",

@@ -6,6 +6,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^5.1.4",
     "glob": "^13.0.6"
   },
   "devDependencies": {
