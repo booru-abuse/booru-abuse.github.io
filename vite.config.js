@@ -4,6 +4,9 @@ import { glob } from "glob";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
+    esbuild: {
+        jsxInject: `import React from "react"`
+    },
     build: {
         emptyOutDir: true,
         assetsInlineLimit: 0,
