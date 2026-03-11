@@ -43,26 +43,21 @@ search.input.addEventListener("keydown", async (event) => {
 
         client.search(search.input.value, {
             perPage: 42
-        }).then(posts => posts.forEach(post => {
-            const a = document.createElement("a");
-            a.href = post.file.url;
-
-            const li = document.createElement("li");
-            a.appendChild(li);
-            li.title = `${
-                post.id
-            }: ${
-                post.tags
-                    .ofCategory(Rule34.TagType.Artist)
-                    .map(t => `${t.name} (${t.count})`)
-                    .join(", ")
-            }`;
-
-            const img = document.createElement("img");
-            li.appendChild(img);
-            img.src = post.file.thumbnail.url;
-            
-            search.results.appendChild(a);
-        }));
+        }).then(posts => posts.forEach(post =>
+            search.results.appendChild(
+                <li title={`${
+                    post.id
+                }: ${
+                    post.tags
+                        .ofCategory(Rule34.TagType.Artist)
+                        .map(t => `${t.name} (${t.count})`)
+                        .join(", ")
+                }`}>
+                    <a href={post.file.url}>
+                        <img src={post.file.thumbnail.url} />
+                    </a>
+                </li>
+            )
+        ));
     }
 })
