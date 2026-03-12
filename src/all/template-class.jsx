@@ -106,7 +106,7 @@ export class Submodule {
             </li>
         )));
         
-        var setSrc = (src) => function () { this.src = src; };
+        function setSrc(src) { return function () { this.src = src; }; }
     }
 
     urlParam = {
