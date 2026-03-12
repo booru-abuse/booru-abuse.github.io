@@ -76,7 +76,7 @@ export class Submodule {
         )));
     }
 
-    submitSearch() {
+    async submitSearch() {
         this.element.results.replaceChildren();
         const query = this.element.input.value;
 
