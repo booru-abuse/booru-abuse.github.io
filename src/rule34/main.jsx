@@ -17,7 +17,7 @@ const auth = {
 const client = new Rule34.Client({ auth: auth });
 
 try {
-    client.test();
+    await client.test();
 } catch (error) {
     window.alert([
         [
