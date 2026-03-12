@@ -4,25 +4,25 @@ const ERROR_CODE = {
 };
 
 /** @abstract */
-export default class Submodule {
+export class Submodule {
     /**
      * @abstract Method run when autocompletion is searched for.
      * @param {string} query Value of input element.
-     * @returns {{ name: string; count: number; value: string; }[]}
+     * @returns {Promise<{ name: string; count: number; value: string; }[]>}
      */
-    getAutocompletion(query) {
+    autocomplete(query) {
         this.throwError("METHOD_NOT_IMPLEMENTED");
     }
     
     /**
      * @abstract Method run when post results are searched for.
      * @param {string} query Value of input element.
-     * @returns {{
+     * @returns {Promise<{
      *  thumbnail: string; preview: string; href: string;
      *  id: string | number; tags: { name: string; count: number; }[];
-     * }[]}
+     * }[]>}
      */
-    getSearchResults(query) {
+    search(query) {
         this.throwError("METHOD_NOT_IMPLEMENTED");
     }
 
@@ -65,7 +65,7 @@ export default class Submodule {
         this.element.autocomplete.replaceChildren();
         const query = this.element.input.value;
 
-        Promise.resolve(this.getAutocompletion(query)).then(results =>
+        this.autocomplete(query).then(results =>
             this.element.autocomplete
             .replaceChildren(...results.map((tag, index) => (
                 <li key={index}>
@@ -81,7 +81,7 @@ export default class Submodule {
         const query = this.element.input.value;
 
         this.urlParam.set({ q: query });
-        Promise.resolve(this.getSearchResults(query)).then(results =>
+        this.search(query).then(results =>
             this.element.results
             .replaceChildren(...results.map((post, index) => (
                 <li
