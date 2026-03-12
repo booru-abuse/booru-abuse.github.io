@@ -1,3 +1,5 @@
+@import "../../util/less/unit.less";
+
 .button {
 	color: var(--accent-color-dark-6);
 
@@ -9,8 +11,8 @@
     );
 	background-size: cover;
 	box-sizing: border-box;
-	border: 2px solid var(--accent-color-dark-2);
-	border-radius: 8px;
+	border: (2 / @unit) solid var(--accent-color-dark-2);
+	border-radius: (8 / @unit);
 
 	cursor: pointer;
 	user-select: none;
@@ -25,7 +27,11 @@
         );
 		border-color: var(--accent-color-light-2);
 		color: var(--accent-color-dark-6);
-		box-shadow: 0 0 5px 1px var(--accent-color-main);
+		box-shadow:
+			0 0 // offset
+			(5 / @unit) // blur
+			(1 / @unit) // spread
+			var(--accent-color-main); // color
 	}
 
 	&:active {

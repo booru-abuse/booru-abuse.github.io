@@ -1,5 +1,9 @@
 @import "../../util/less/unit.less";
 
+// TODO: implement autocomplete color vars
+@bg-color: #FFC;
+
+/****** Full search bar ******/
 search#search > fieldset#search-bar {
     display: flex;
     margin: 0;
@@ -14,6 +18,7 @@ search#search > fieldset#search-bar {
 
     min-inline-size: unset;
 
+    /***** Input bar *****/
     > div.bar {
         position: relative;
         color: black;
@@ -43,33 +48,29 @@ search#search > fieldset#search-bar {
         > ul.autocomplete {
             width: 100%;
             padding: (2 / @unit) (6 / @unit);
-            display: none;
+            display: none; // set to "block" when input:focus
 
             position: absolute;
             bottom: (14 / @unit);
             left: 0;
 
-            // TODO: implement autocomplete color vars
-            @bg-color: #FFC;
             box-sizing: border-box;
             background-image: linear-gradient(
                 to bottom,
-                desaturate(darken(
-                    spin(@bg-color, -5),
-                10%, relative), 10%, relative),
+                desaturate(darken(spin(@bg-color, -5), 10%, relative), 10%, relative),
                 @bg-color
             );
             border: (2 / @unit) solid darken(spin(@bg-color, -5), 20%, relative);
             border-radius: (8 / @unit);
 
-            // ???
+            /*** Arrow ***/
             &::after {
                 content: "";
                 display: block;
                 width: 0;
 
                 position: absolute;
-                bottom: 100%;
+                bottom: -100%;
                 left: (6 / @unit);
 
                 border-width: 0 (10 / @unit) (10 / @unit);
@@ -79,12 +80,15 @@ search#search > fieldset#search-bar {
                     transparent;
             }
 
-            // ???
+            /* Maintain visibility when input focus is lost and mouse is still
+             * hovering over element
+             */
             &:hover {
                 display: block;
             }
 
-            > li {
+            /*** Results exist ***/
+            > li:has(> span:is(.name, .count)) {
                 display: grid;
                 grid-auto-columns: 2fr 1fr;
 
@@ -96,9 +100,12 @@ search#search > fieldset#search-bar {
                 > span.count {
                     display: flex;
                     justify-content: flex-end;
+                    &::before { content: "("; }
+                    &::after  { content: ")"; }
                 }
             }
 
+            /*** Results are pending ***/
             &.loading {
                 background-image: linear-gradient(
                     to bottom,
@@ -111,7 +118,9 @@ search#search > fieldset#search-bar {
                 }
             }
 
-            &:not(:has(> li)) {
+            /*** No results ***/
+            &:not(:has(> li:has(> span:is(.name, .count)))) {
+                color: #4a072c;
                 background-image: linear-gradient(
                     to bottom,
                     #f8bac1,
@@ -121,140 +130,28 @@ search#search > fieldset#search-bar {
                 &::after {
                     border-color: #f8bac1 transparent;
                 }
+                > li {
+                    display: block;
+                }
             }
         }
-    }
-}
 
-#search-bar {c1
-    div.input {
-        position: relative;
-        color: black;
-        padding: 2px 6px;
-        background-image: linear-gradient(
-            to bottom,
-            var(--accent-color-light-3),
-            white
-        );
-        background-size: cover;
-        box-sizing: border-box;
-        border: 2px solid var(--accent-color-light-3);
-        border-radius: 8px;
-
-        input {
-            padding: 0;
-            border: none;
-            outline: 0;
-            background-color: transparent;
-
-            font-family: inherit;
-            font-size: inherit;
-            color: inherit;
-            line-height: 1em;
-        }
-
-        div.autocomplete {
-            width: 100%;
-            padding: 2px 6px;
-            display: none;
-
-            position: absolute;
-            top: calc(100% + 14px);
-            left: 0;
-
-            box-sizing: border-box;
+        /**** Input element is focused ****/
+        &:has(input.input:focus) {
+            box-shadow:
+                0 (1 / @unit)
+                (5 / @unit)
+                (3 / @unit)
+                fade(@bg-color, 68%); // 0x44 = 68
             background-image: linear-gradient(
                 to bottom,
-                desaturate(darken(spin(#FFC, -5), 10%, relative), 10%, relative),
-                #FFC
+                desaturate(darken(spin(@bg-color, -5), 10%, relative), 10%, relative),
+                @bg-color
             );
-            border: 2px solid darken(spin(#FFC, -5), 20%, relative);
-            border-radius: 8px;
+            border-color: darken(spin(@bg-color, -5), 20%, relative);
 
-            &::after {
-                content: "";
-                display: block;
-                width: 0;
-
-                position: absolute;
-                bottom: 100%;
-                left: 6px;
-
-                border-style: solid;
-                border-color: desaturate(darken(spin(#FFC, -5), 10%, relative), 10%, relative) transparent;
-                border-width: 0 10px 10px;
-            }
-
-            &:hover {
-                display: block;
-            }
-
-            div.result {
-                display: grid;
-                grid-template-areas: "tag count";
-                grid-auto-columns: 2fr 1fr;
-
-                div.name, div.count {
-                    display: flex;
-                    flex-direction: row;
-                }
-                div.tag {
-                    grid-area: tag;
-                    justify-content: flex-start;
-                    overflow-wrap: anywhere;
-                }
-                div.count {
-                    grid-area: count;
-                    justify-content: flex-end;
-                }
-            }
-            div.loading, div.none {
-                display: none;
-            }
-            div.loading span {
-                color: var(--accent-color-dark-4);
-            }
-            div.none span {
-                color: #4a072c;
-            }
-        }
-
-        &:has(input:focus) {
-            box-shadow: 0 1px 5px 3px #FFC4;
-            background-image: linear-gradient(to bottom, desaturate(darken(spin(#FFC, -5), 10%, relative), 10%, relative), #FFC);
-            border-color: darken(spin(#FFC, -5), 20%, relative);
-
-            div.autocomplete[data-status="loading"] {
-                display: block;
-
-                background-image: linear-gradient(to bottom, var(--accent-color-light-3), var(--accent-color-light-4));
-                border-color: var(--accent-color-light-3);
-                &::after {
-                    border-color: var(--accent-color-light-3) transparent;
-                }
-                div.loading {
-                    display: block;
-                }
-            }
-            div.autocomplete[data-status="results"] {
-                display: block;
-
-                background-image: linear-gradient(to bottom, desaturate(darken(spin(#FFC, -5), 10%, relative), 10%, relative), #FFC);
-                border-color: darken(spin(#FFC, -5), 20%, relative);
-                &::after {
-                    border-color: darken(spin(#FFC, -5), 20%, relative) transparent;
-                }
-            }
-            div.autocomplete[data-status="none"] {
-                display: block;
-                background-image: linear-gradient(to bottom, #f8bac1, white);
-                border-color: #f8bac1;
-                &::after {
-                    border-color: #f8bac1 transparent;
-                }
-                div.none {
-                    display: block;
-                }
+            > ul.autocomplete {
+                display: block; // only visible when focused
             }
         }
     }
