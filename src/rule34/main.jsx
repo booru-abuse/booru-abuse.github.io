@@ -29,35 +29,96 @@ try {
     window.stop();
 }
 
-let getEl = (...i) => document.getElementById(...i);
+const getEl = (i) => document.getElementById(i);
 
-const search = {
+const el = {
     input: getEl("search-input"),
     autocomplete: getEl("search-autocomplete"),
     results: getEl("search-results")
 };
 
-search.input.addEventListener("keydown", async (event) => {
-    if (event.key === "Enter") {
-        search.results.textContent = "";
+el.input.addEventListener("keydown",
+    event => event.key === "Enter" && submitSearch()
+);
+el.input.addEventListener("input", autocomplete);
 
-        client.search(search.input.value, {
-            perPage: 42
-        }).then(posts => posts.forEach(post =>
-            search.results.appendChild(
-                <li key={post.id} title={`${
-                    post.id
-                }: ${
-                    post.tags
-                        .ofCategory(Rule34.TagType.Artist)
-                        .map(t => `${t.name} (${t.count})`)
-                        .join(", ")
-                }`}>
-                    <a href={post.file.url}>
-                        <img src={post.file.thumbnail.url} />
-                    </a>
-                </li>
-            )
-        ));
+function autocomplete() {
+    el.autocomplete.replaceChildren();
+
+    client.autocomplete(el.input.value)
+    .then(tags => {
+        el.autocomplete.replaceChildren();
+        el.autocomplete.append(...tags.tags.map((tag, index) => (
+            <li key={index}>
+                <span className="name">{ tag.name }</span>
+                <span className="count">{ tag.count }</span>
+            </li>
+        )
+    ))});
+}
+
+function submitSearch() {
+    el.results.replaceChildren();
+
+    UrlParam.set({ q: el.input.value });
+
+    client.search(el.input.value, {
+        perPage: 42
+    }).then(posts => {
+        el.results.replaceChildren();
+        el.results.append(...Array.from(posts).map(post => (
+            <li
+                key={post.id}
+                title={
+                    `${
+                        post.id
+                    }: ${
+                        post.tags
+                            .ofCategory(Rule34.TagType.Artist)
+                            .map(t => `${t.name} (${t.count})`)
+                            .join(", ")
+                    }`
+                }
+            >
+                <a href={post.file.url}>
+                    <img
+                        src={post.file.thumbnail.url}
+                        onMouseOver={setSrc(post.file.downsample.url)}
+                        onMouseOut ={setSrc(post.file.thumbnail.url)}
+                    />
+                </a>
+            </li>
+        )))
+    });
+    function setSrc(src) { return function () { this.src = src; }; }
+}
+
+const UrlParam = {
+    set(object) {
+        const params = new URLSearchParams();
+        Object.entries(object).forEach(
+            ([ key, value ]) => params.set(key, value)
+        );
+        this.setParams(params);
+    },
+    replace(object) {
+        const params = this.getParams();
+        Object.entries(object).forEach(
+            ([ key, value ]) => params.set(key, value)
+        );
+        this.setParams(params);
+    },
+    remove(...keys) {
+        const params = this.getParams();
+        keys.forEach(params.delete);
+        this.setParams(params);
+    },
+    getParams() {
+        return new URL(window.location.href).searchParams;
+    },
+    setParams(params) {
+        const url = new URL(window.location);
+        url.search = params.toString();
+        window.history.replaceState({}, "", url.href);
     }
-})
+};
