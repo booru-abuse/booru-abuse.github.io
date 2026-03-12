@@ -51,7 +51,7 @@ search#search > fieldset#search-bar {
             display: none; // set to "block" when input:focus
 
             position: absolute;
-            bottom: (-14 / @unit);
+            top: calc(100% + (14 / @unit));
             left: 0;
 
             box-sizing: border-box;
@@ -90,18 +90,22 @@ search#search > fieldset#search-bar {
             /*** Results exist ***/
             > li:has(> span:is(.name, .count)) {
                 display: grid;
+                grid-auto-flow: column;
                 grid-auto-columns: 2fr 1fr;
 
-                > span.name {
+                > span {
                     display: flex;
-                    justify-content: flex-start;
-                    overflow-wrap: anywhere;
-                }
-                > span.count {
-                    display: flex;
-                    justify-content: flex-end;
-                    &::before { content: "("; }
-                    &::after  { content: ")"; }
+                    &.name {
+                        display: flex;
+                        justify-content: flex-start;
+                        overflow-wrap: anywhere;
+                    }
+                    &.count {
+                        display: flex;
+                        justify-content: flex-end;
+                        &::before { content: "("; }
+                        &::after  { content: ")"; }
+                    }
                 }
             }
 
@@ -119,7 +123,7 @@ search#search > fieldset#search-bar {
             }
 
             /*** No results ***/
-            &:not(:has(> li:has(> span:is(.name, .count)))) {
+            &.no-results {
                 color: #4a072c;
                 background-image: linear-gradient(
                     to bottom,
@@ -152,6 +156,11 @@ search#search > fieldset#search-bar {
 
             > ul.autocomplete {
                 display: block; // only visible when focused
+                
+                /** Inactive **/
+                &:not(:has(> li > span:is(.name, .count))) {
+                    display: none;
+                }
             }
         }
     }

@@ -29,12 +29,7 @@ export class Submodule {
     }
 
     constructor () {
-        try {
-            this.run();
-        } catch (error) {
-            window.alert(error);
-            this.throwError("UNEXPECTED_ERROR");
-        }
+        this.run();
     }
     
     element = {
@@ -46,14 +41,15 @@ export class Submodule {
     };
 
     run() {
+        window.addEventListener("error", window.alert);
         this.element.input.addEventListener("keydown",
-            event => event.key === "Enter" && this.submitSearch().catch(window.alert)
+            event => event.key === "Enter" && this.submitSearch()
         );
         this.element.submit.addEventListener("click",
-            () => this.submitSearch().catch(window.alert)
+            () => this.submitSearch()
         );
         this.element.input.addEventListener("input",
-            () => this.suggestAutocompletion().catch(window.alert)
+            () => this.suggestAutocompletion()
         );
     }
 
@@ -71,6 +67,8 @@ export class Submodule {
     async suggestAutocompletion() {
         this.element.autocomplete.replaceChildren();
         const query = this.element.input.value;
+
+        
 
         const results = await this.autocomplete(query);
 

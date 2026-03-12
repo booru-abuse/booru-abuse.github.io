@@ -48,20 +48,22 @@ ul#search-results {
         > .thumb { display: block; }
         > .preview { display: none; }
         
-        &:hover {
-            transform: scale(1.25);
-            filter: drop-shadow(0 (10 / @unit) (30 / @unit) #0008);
-            z-index: 1;
+        @media (hover: hover) {
+            &:hover {
+                transform: scale(1.25);
+                filter: drop-shadow(0 (10 / @unit) (30 / @unit) #0008);
+                z-index: 1;
 
-            > .thumb { display: none; }
-            > .preview { display: block; }
-        }
+                > .thumb { display: none; }
+                > .preview { display: block; }
+            }
 
-        &:active {
-            --border-color: #FFF3;
-            transform: scale(1.1) rotate(2deg);
-            filter: drop-shadow(0 (10 / @unit) (30 / @unit) #FFF3);
-            z-index: 1;
+            &:active {
+                --border-color: #FFF3;
+                transform: scale(1.1) rotate(2deg);
+                filter: drop-shadow(0 (10 / @unit) (30 / @unit) #FFF3);
+                z-index: 1;
+            }
         }
     }
 }
