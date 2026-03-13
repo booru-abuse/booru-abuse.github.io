@@ -41,7 +41,15 @@ export class Submodule {
     };
 
     run() {
+        // window.addEventListener("load", ...) doesnt work for some reason
+        this.displaySearchResults();
+
         window.addEventListener("error", window.alert);
+
+        window.addEventListener("popstate", event => {
+            this.displaySearchResults();
+        });
+
         this.element.input.addEventListener("keydown",
             event => event.key === "Enter" && this.submitSearch()
         );
@@ -96,6 +104,11 @@ export class Submodule {
         const query = this.element.input.value;
 
         this.urlParam.set({ q: query });
+    }
+
+    async displaySearchResults() {
+        const query = this.urlParam.getParams().get("q");
+        this.element.input.value = query;
         const results = await this.search(query);
 
         this.element.results
@@ -141,7 +154,7 @@ export class Submodule {
         setParams(params) {
             const url = new URL(window.location);
             url.search = params.toString();
-            window.history.replaceState({}, "", url.href);
+            window.history.pushState({}, "", url.href);
         }
     };
 
