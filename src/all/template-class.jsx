@@ -44,11 +44,16 @@ export class Submodule {
         // window.addEventListener("load", ...) doesnt work for some reason
         this.displaySearchResults();
 
-        window.addEventListener("error", window.alert);
+        window.addEventListener("error",
+            event => window.alert([
+                `In ${event.filename}:${event.lineno}:${event.colno}:`,
+                event.message
+            ].join("\n"))
+        );
 
-        window.addEventListener("popstate", event => {
-            this.displaySearchResults();
-        });
+        window.addEventListener("popstate",
+            () => this.displaySearchResults()
+        );
 
         this.element.input.addEventListener("keydown",
             event => event.key === "Enter" && this.submitSearch()
