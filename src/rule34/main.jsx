@@ -50,7 +50,7 @@ new class Rule34Module extends Submodule {
             preview: post.file.type === Rule34.PostFileType.Video
                 ? post.file.downsample.url
                 : post.file.url,
-            href: post.file.url,
+            href: post.file.url + "?" + post.id,
             type: ({
                 [Rule34.PostFileType.Static]: "static",
                 [Rule34.PostFileType.Animated]: "animated",
