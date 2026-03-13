@@ -1,46 +1,59 @@
-const ERROR_CODE = {
-    METHOD_NOT_IMPLEMENTED: "Method must be implemented by subclass.",
-    PROPERTY_NOT_IMPLEMENTED: "Property must be implemented by subclass.",
-    UNEXPECTED_ERROR: "An unexpected error was caught."
-};
+import { DOMManager } from "../util/js/dom-manager.jsx";
+import { URLParameterManager } from "../util/js/url-parameter-manager.jsx";
+
+/**
+ * @typedef {Object} AutocompleteResult
+ * @prop {string} name
+ * @prop {number} count
+ * @prop {string} value
+ */
+
+/**
+ * @typedef {Object} SearchResult
+ * @prop {string} thumbnail
+ * @prop {string} preview
+ * @prop {string} href
+ * @prop {"static" | "animated" | "video"} type
+ * @prop {string | number} id
+ * @prop {{ name: string; count: number; }[]} tags
+ */
 
 /** @abstract */
 export class Submodule {
     /**
      * @abstract Method run when autocompletion is searched for.
      * @param {string} query Value of input element.
-     * @returns {Promise<{ name: string; count: number; value: string; }[]>}
+     * @returns {Promise<AutocompleteResult[]>}
      */
     autocomplete(query) {
-        this.throwError("METHOD_NOT_IMPLEMENTED");
+        throw new Error("Method must be implemented by subclass.");
     }
     
     /**
      * @abstract Method run when post results are searched for.
      * @param {string} query Value of input element.
-     * @returns {Promise<{
-     *  thumbnail: string; preview: string;
-     *  href: string; type: "static" | "animated" | "video";
-     *  id: string | number; tags: { name: string; count: number; }[];
-     * }[]>}
+     * @returns {Promise<SearchResult[]>}
      */
     search(query) {
-        this.throwError("METHOD_NOT_IMPLEMENTED");
+        throw new Error("Method must be implemented by subclass.");
     }
 
     constructor () {
-        this.run();
-    }
-    
-    element = {
-        input: this.getElement("search-bar", "input.input"),
-        clear: this.getElement("search-bar", "button.clear"),
-        autocomplete: this.getElement("search-bar", "ul.autocomplete"),
-        submit: this.getElement("search-bar", "button.submit"),
-        results: this.getElement("search-results")
-    };
+        this.url = new URLParameterManager();
+        const dom = new DOMManager();
 
-    run() {
+        this.element = {
+            input:        dom.getElement("search-bar", "input.input"),
+            clear:        dom.getElement("search-bar", "button.clear"),
+            autocomplete: dom.getElement("search-bar", "ul.autocomplete"),
+            submit:       dom.getElement("search-bar", "button.submit"),
+            results:      dom.getElement("search-results")
+        };
+        
+        this.bindEvents();
+    }
+
+    bindEvents() {
         // window.addEventListener("load", ...) doesnt work for some reason
         this.displaySearchResults();
 
@@ -64,19 +77,6 @@ export class Submodule {
         this.element.input.addEventListener("input",
             () => this.suggestAutocompletion()
         );
-    }
-
-    hover() { return window.matchMedia("(hover: hover)").matches; }
-
-    /**
-     * @param {string} id 
-     * @param {string | undefined} query 
-     * @returns {HTMLElement}
-     */
-    getElement(id, query) {
-        const el = document.getElementById(id);
-        if (query) return el.querySelector(query);
-        else return el;
     }
 
     async suggestAutocompletion() {
@@ -108,12 +108,12 @@ export class Submodule {
         this.element.results.replaceChildren();
         const query = this.element.input.value;
 
-        this.urlParam.set({ q: query });
+        this.url.set({ q: query });
         this.displaySearchResults();
     }
 
     async displaySearchResults() {
-        const query = this.urlParam.getParams().get("q");
+        const query = this.url.getParams().get("q");
         this.element.input.value = query;
         const results = await this.search(query);
 
@@ -132,42 +132,5 @@ export class Submodule {
                 </a>
             </li>
         )));
-    }
-
-    urlParam = {
-        set(object) {
-            const params = new URLSearchParams();
-            Object.entries(object).forEach(
-                ([ key, value ]) => params.set(key, value)
-            );
-            this.setParams(params);
-        },
-        replace(object) {
-            const params = this.getParams();
-            Object.entries(object).forEach(
-                ([ key, value ]) => params.set(key, value)
-            );
-            this.setParams(params);
-        },
-        remove(...keys) {
-            const params = this.getParams();
-            keys.forEach(params.delete);
-            this.setParams(params);
-        },
-        getParams() {
-            return new URL(window.location.href).searchParams;
-        },
-        setParams(params) {
-            const url = new URL(window.location);
-            url.search = params.toString();
-            window.history.pushState({}, "", url.href);
-        }
-    };
-
-    /**
-     * @param {keyof typeof ERROR_CODE} code
-     */
-    throwError(code) {
-        throw new Error(ERROR_CODE[code]);
     }
 }
