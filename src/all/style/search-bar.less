@@ -20,6 +20,8 @@ search#search > fieldset#search-bar {
 
     /***** Input bar *****/
     > div.bar {
+        display: flex;
+
         position: relative;
         color: black;
         padding: (2 / @unit) (6 / @unit);
@@ -34,6 +36,11 @@ search#search > fieldset#search-bar {
         // border-radius: (8 / @unit);
 
         > input.input {
+            width: (300 / @unit);
+            @media (max-width: (500 / @unit)) {
+                width: (200 / @unit);
+            }
+
             padding: 0;
             outline: 0;
             border: none;
@@ -46,6 +53,8 @@ search#search > fieldset#search-bar {
         }
 
         > ul.autocomplete {
+            z-index: 2;
+
             width: 100%;
             padding: (2 / @unit) (6 / @unit);
             margin: 0;

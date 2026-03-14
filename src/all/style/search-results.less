@@ -5,12 +5,13 @@ ul#search-results {
     padding: 0;
     display: grid;
     gap: (8 / @unit);
-    grid-template-columns: repeat(auto-fill, minmax(
-        min(
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(min(
             calc((100% - ($gap * 2)) / 3),
             (150 / @unit)
-        ),
-    1fr));
+        ), 1fr)
+    );
 
     > li {
         z-index: 0;
