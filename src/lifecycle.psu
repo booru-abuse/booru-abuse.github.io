@@ -10,6 +10,7 @@ set Element = {
 
 Window.On("load") = LoadResults()
 UrlParam.On("change") = LoadResults()
+// TODO: use info with popstate for minimum api usage
 
 Element.Input.On("change") = SuggestAutocomplete()
 
