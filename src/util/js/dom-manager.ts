@@ -7,18 +7,44 @@ export class DOMManager {
         else return el as HTMLElementTagNameMap[T];
     }
 
-    /* create<T extends keyof HTMLElementTagNameMap>(
+    create<T extends keyof HTMLElementTagNameMap>(
         tagName: T,
         options: {
-            attributes?: Record<string, string>;
             properties?: {
                 [K in keyof HTMLElementTagNameMap[T]]?: HTMLElementTagNameMap[T][K];
             };
-            events?: {
-                [type: string]: (event: Event) => void;
+            attributes?: Record<string, string>;
+            on?: {
+                [T in keyof HTMLElementEventMap]?: (
+                    this: HTMLElementTagNameMap[T],
+                    event: HTMLElementEventMap[T]
+                ) => any;
             };
+            once?: {
+                [T in keyof HTMLElementEventMap]?: (
+                    this: HTMLElementTagNameMap[T],
+                    event: HTMLElementEventMap[T]
+                ) => any;
+            };
+            children: Element[];
         }
     ): HTMLElementTagNameMap[T] {
+        const element = document.createElement(tagName);
 
-    } */
+        Object.entries(options.attributes ?? {}).forEach(([key, value]) =>
+            element.setAttribute(key, value)
+        );
+        Object.entries(options.properties ?? {}).forEach(([key, value]) =>
+            element[key] = value
+        );
+
+        Object.entries(options.on ?? {}).forEach(([key, value]) =>
+            element.addEventListener(key, value, false)
+        );
+        Object.entries(options.once ?? {}).forEach(([key, value]) =>
+            element.addEventListener(key, value, true)
+        );
+
+        element.replaceChildren(...options.children);
+    }
 }
