@@ -16,15 +16,15 @@ export class DOMManager {
             };
             attributes?: Record<string, string>;
             on?: {
-                [T in keyof HTMLElementEventMap]?: (
+                [E in keyof HTMLElementEventMap]?: (
                     this: HTMLElementTagNameMap[T],
-                    event: HTMLElementEventMap[T]
+                    event: HTMLElementEventMap[E]
                 ) => any;
             };
             once?: {
-                [T in keyof HTMLElementEventMap]?: (
+                [E in keyof HTMLElementEventMap]?: (
                     this: HTMLElementTagNameMap[T],
-                    event: HTMLElementEventMap[T]
+                    event: HTMLElementEventMap[E]
                 ) => any;
             };
             children: (string | Node)[];
@@ -32,21 +32,26 @@ export class DOMManager {
     ): HTMLElementTagNameMap[T] {
         const element = document.createElement(tagName);
 
-        Object.entries(options.attributes ?? {}).forEach(([key, value]) =>
-            element.setAttribute(key, value)
-        );
-        Object.entries(options.properties ?? {}).forEach(([key, value]) =>
-            element[key] = value
-        );
+        if (options.attributes)
+            Object.entries(options.attributes).forEach(([key, value]) =>
+                element.setAttribute(key, value)
+            );
+        if (options.properties)
+            Object.entries(options.properties).forEach(([key, value]) =>
+                element[key as keyof typeof element] = value
+            );
 
-        Object.entries(options.on ?? {}).forEach(([key, value]) =>
-            element.addEventListener(key, value, false)
-        );
-        Object.entries(options.once ?? {}).forEach(([key, value]) =>
-            element.addEventListener(key, value, true)
-        );
+        if (options.on)
+            Object.entries(options.on).forEach(([key, value]) =>
+                element.addEventListener(key, value as EventListenerOrEventListenerObject, false)
+            );
+        if (options.once)
+            Object.entries(options.once).forEach(([key, value]) =>
+                element.addEventListener(key, value as EventListenerOrEventListenerObject, true)
+            );
 
-        element.replaceChildren(...options.children);
+        if (options.children)
+            element.replaceChildren(...options.children);
 
         return element;
     }
