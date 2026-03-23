@@ -6,11 +6,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.1.4",
     "express": "^5.2.1",
-    "glob": "^13.0.6",
-    "jsx-dom": "^8.1.6",
-    "react": "^19.2.4"
+    "glob": "^13.0.6"
   },
   "devDependencies": {
     "less": "^4.6.3",
