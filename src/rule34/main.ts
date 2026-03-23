@@ -1,5 +1,5 @@
 import * as Rule34 from "https://esm.sh/gh/booru-abuse/booru-abuse@v0.1.0-alpha/src/module/rule34/index.ts.mjs?target=es2022";
-import { Submodule, type AutocompleteResult, type SearchResult } from "../all/template-class.ts";
+import { Submodule } from "../all/template-class.ts";
 
 /* this page is in testing and i just want to be sure esm.sh works before i get
  * custom api keys or a vercel service set up
@@ -18,7 +18,7 @@ const client = new Rule34.Client({ auth: auth });
 
 try {
     await client.test();
-} catch (error) {
+} catch (error: any) {
     window.alert([
         [
             "Uh-oh! The API key doesn't work properly. Please let me know via",
@@ -31,19 +31,19 @@ try {
 }
 
 new class Rule34Module extends Submodule {
-    async autocomplete(query) {
+    async autocomplete(query: string) {
         return await client.autocomplete(query.match(/[^ ]*$/)?.[0])
-        .then(tags => tags.tags.map(tag => ({
+        .then((tags: any) => tags.tags.map((tag: any) => ({
             name: tag.name.replace(/_/g, " "),
             count: tag.count,
             value: tag.name
         })));
     }
 
-    async search(query) {
+    async search(query: string) {
         return await client.search(query, {
             perPage: 42
-        }).then(posts => Array.from(posts).map(post => ({
+        }).then((posts: any) => Array.from(posts).map((post: any) => ({
             thumbnail: post.file.thumbnail.url,
             preview: post.file.type === Rule34.PostFileType.Video
                 ? post.file.downsample.url
@@ -55,7 +55,7 @@ new class Rule34Module extends Submodule {
                 [Rule34.PostFileType.Video]: "video",
             })[post.file.type],
             id: post.id,
-            tags: post.tags.ofCategory(Rule34.TagType.Artist).map(tag => ({
+            tags: post.tags.ofCategory(Rule34.TagType.Artist).map((tag: any) => ({
                 name: tag.name,
                 count: tag.count
             }))
