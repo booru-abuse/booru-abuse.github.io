@@ -85,8 +85,8 @@ export abstract class Submodule {
 
         const submit = () => {
             const query = this.el.search.input.value;
-            const page = this.el.flipper.input.value;
-            this.submitSearch(query, page);
+            this.submitSearch(query, "0");
+            this.el.search.input.blur();
         }
 
         this.el.flipper.prev.addEventListener("click",
