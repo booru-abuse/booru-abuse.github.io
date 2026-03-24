@@ -1,12 +1,10 @@
-export function getEl<T extends Element | keyof HTMLElementTagNameMap = Element>(
-    id: string, query?: string
-): T extends Element ? T : HTMLElementTagNameMap[T] {
-    const el = document.getElementById(id);
-    if (query) return el?.querySelector(query) as HTMLElementTagNameMap[T];
-    else return el as HTMLElementTagNameMap[T];
+export function getEl<T extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>(
+    query: string
+): HTMLElementTagNameMap[T] {
+    return document.querySelector(query)!;
 }
 
-export function createEl<T extends Element | keyof HTMLElementTagNameMap>(
+export function createEl<T extends keyof HTMLElementTagNameMap>(
     tagName: T,
     options: {
         properties?: {
@@ -28,7 +26,7 @@ export function createEl<T extends Element | keyof HTMLElementTagNameMap>(
         };
         children?: (string | Node)[];
     }
-): T extends Element ? T : HTMLElementTagNameMap[T] {
+): HTMLElementTagNameMap[T] {
     const element = document.createElement(tagName);
 
     if (options.attributes)
