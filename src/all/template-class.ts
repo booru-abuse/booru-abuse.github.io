@@ -99,7 +99,7 @@ export abstract class Submodule {
         const flip = (dir: 1 | -1) => {
             const query = url.get("q") ?? "";
             const page = url.get("p") ?? "0";
-            this.submitSearch(query, page + dir);
+            this.submitSearch(query, String(parseInt(page) + dir));
         };
 
         this.el.flipper.input.addEventListener("keydown", e => {
@@ -164,6 +164,8 @@ export abstract class Submodule {
         this.el.flipper.input.value = page;
         if (page === "0")
             this.el.flipper.prev.disabled = true;
+        else
+            this.el.flipper.prev.disabled = false;
     }
 
     //#region display
