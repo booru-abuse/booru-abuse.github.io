@@ -31,9 +31,9 @@ export class URLParameterManager {
         return new URL(window.location.href).searchParams;
     }
 
-    setParams(params: object) {
+    setParams(params: URLSearchParams, data?: any = {}) {
         const url = new URL(window.location.toString());
         url.search = params.toString();
-        window.history.pushState({}, "", url.href);
+        window.history.pushState(data, "", url.href);
     }
 };
