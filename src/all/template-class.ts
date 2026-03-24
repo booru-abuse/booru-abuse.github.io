@@ -46,12 +46,12 @@ export abstract class Submodule {
     bindEvents() {
         // window.addEventListener("load", ...) doesnt work for some reason
         const onload = () => {
-            const query = url.get("q");
-            const page = url.get("p");
+            const query = url.get("q") ?? "";
+            const page = url.get("p") ?? "0";
             if (query !== null || page !== null) {
                 this.setSearchValues(query);
                 this.setPageValues(page);
-                this.submitSearch(query ?? "", page ?? 0);
+                this.submitSearch(query, page);
             }
         };
         onload();
@@ -67,8 +67,8 @@ export abstract class Submodule {
         window.addEventListener("popstate", e => {
             const query = url.get("q");
             if (query) this.el.search.input.value = query;
-            const page = parseInt(url.get("p"));
-            this.el.flipper.input.value = page ?? 0;
+            const page = url.get("p");
+            this.el.flipper.input.value = page ?? "0";
             this.displaySearchResults(e.state);
         });
 
@@ -96,16 +96,16 @@ export abstract class Submodule {
             () => flip(+1)
         );
 
-        const flip = dir => {
-            const query = url.get("q");
-            const page = parseInt(url.get("p"));
+        const flip = (dir: 1 | -1) => {
+            const query = url.get("q") ?? "";
+            const page = url.get("p") ?? "0";
             this.submitSearch(query, page + dir);
         };
 
         this.el.flipper.input.addEventListener("keydown", e => {
             if (e.key === "Enter") {
-                const query = url.get("q");
-                const page = e.target.value;
+                const query = url.get("q") ?? "";
+                const page = this.el.flipper.input.value;
                 this.submitSearch(query, page);
             }
         });
@@ -137,12 +137,12 @@ export abstract class Submodule {
 
     //#region search
 
-    async submitSearch(query, page) {
+    async submitSearch(query: string, page: string) {
         this.setSearchValues(query);
         this.setPageValues(page);
 
         this.displaySearchResults(null);
-        const results = await this.search(query, page);
+        const results = await this.search(query, parseInt(page));
         url.set({ q: query, p: page }, results);
         this.displaySearchResults(results);
     }
@@ -153,89 +153,93 @@ export abstract class Submodule {
         this.submitSearch(query, page);
     }
 
-    setSearchValues(query) {
+    setSearchValues(query: string) {
         if (query !== null) this.el.search.input.value = query;
     }
 
     //#region page flipper
 
-    setPageValues(page) {
-        page ??= 0;
+    setPageValues(page: string) {
+        page ??= "0";
         this.el.flipper.input.value = page;
-        if (page === 0)
+        if (page === "0")
             this.el.flipper.prev.disabled = true;
     }
 
     //#region display
 
-    displayAutocomplete(tags) {
-        switch (true) {
-            case !tags:
-                list.replaceChildren();
-                break;
-            case !tags.length:
-                list.replaceChildren(
-                    createEl("li", {
-                        properties: { className: "no-results" },
-                        children: [ "No results!" ]
+    displayAutocomplete(tags: {
+        name: string;
+        count: number;
+        value: string;
+    }[] | null) {
+        const list = this.el.search.autocomplete;
+        if (!tags)
+            list.replaceChildren();
+        else if (!tags.length)
+            list.replaceChildren(
+                createEl("li", {
+                    properties: { className: "no-results" },
+                    children: [ "No results!" ]
+                })
+            );
+        else
+            list.replaceChildren(...tags.map((tag: any) =>
+                createEl("li", { children: [
+                    createEl("span", {
+                        properties: { className: "name" },
+                        children: [ tag.name ]
+                    }),
+                    createEl("span", {
+                        properties: { className: "count" },
+                        children: [ tag.count ]
                     })
-                );
-                break;
-            default:
-                list.replaceChildren(...tags.map(tag =>
-                    createEl("li", { children: [
-                        createEl("span", {
-                            properties: { className: "name" },
-                            children: [ tag.name ]
-                        }),
-                        createEl("span", {
-                            properties: { className: "count" },
-                            children: [ tag.count ]
-                        })
-                    ]})
-                ));
-        }
+                ]})
+            ));
     }
 
-    displaySearchResults(posts) {
+    displaySearchResults(posts: {
+        thumbnail: string;
+        preview: string;
+        href: string;
+        type: "static" | "animated" | "video";
+        id: string | number;
+        tags: { name: string; count: number; }[];
+    }[] | null) {
         const list = this.el.results;
-        switch (true) {
-            case !posts:
-                list.replaceChildren();
-                break;
-            case !posts.length:
-                list.replaceChildren(
-                    createEl("li", {
-                        properties: { className: "no-results" },
-                        children: [ "No results!" ]
-                    })
-                );
-                break;
-            default:
-                list.replaceChildren(...posts.map(post =>
-                    createEl("li", {
-                        properties: {
-                            className: post.type,
-                            title: `${post.id}: ${post.tags
-                                .map(t => `${t.name} (${t.count})`)
-                                .join(", ")
-                            }`
-                        },
-                        children: [ createEl("a", {
-                            properties: { href: post.href },
-                            children: [
-                                createEl("img", { properties: {
-                                    className: "thumb",
-                                    src: post.thumbnail
-                                }}),
-                                createEl("img", { properties: {
-                                    className: "preview",
-                                    src: post.preview
-                                }})
-                            ]
-                        })]
-                    })
-                ));
-        }
+        if (!posts)
+            list.replaceChildren();
+        else if (!posts.length)
+            list.replaceChildren(
+                createEl("li", {
+                    properties: { className: "no-results" },
+                    children: [ "No results!" ]
+                })
+            );
+        else
+            list.replaceChildren(...posts.map(post =>
+                createEl("li", {
+                    properties: {
+                        className: post.type,
+                        title: `${post.id}: ${post.tags
+                            .map(t => `${t.name} (${t.count})`)
+                            .join(", ")
+                        }`
+                    },
+                    children: [ createEl("a", {
+                        properties: { href: post.href },
+                        children: [
+                            createEl("img", { properties: {
+                                className: "thumb",
+                                src: post.thumbnail
+                            }}),
+                            createEl("img", { properties: {
+                                className: "preview",
+                                src: post.preview
+                            }})
+                        ]
+                    })]
+                })
+            ));
     }
 }
