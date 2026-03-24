@@ -12,16 +12,27 @@
         <script type="module" src="./main.ts"></script>
     </head>
     <body>
-        <search id="search">
+        <search>
             <fieldset id="search-bar">
                 <button type="button" class="clear button">Clear</button>
                 <div class="bar">
-                    <input type="search" class="input" placeholder="Search..." />
+                    <input type="search" class="input" />
                     <ul class="autocomplete"></ul>
                 </div>
                 <button type="submit" class="submit button">Search</button>
             </fieldset>
             <ul id="search-results"></ul>
         </search>
+        <article id="post">
+            <figure></figure>
+            <section class="family"></section>
+            <section class="tags"></section>
+            <section class="info">
+                <section class="post"></section>
+                <section class="meta"></section>
+                <section class="links"></section>
+            </section>
+            <section class="comments"></section>
+        </article>
     </body>
 </html>
