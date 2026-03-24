@@ -1,6 +1,8 @@
 import { getEl, createEl } from "../util/ts/dom.ts";
 import { URLParameterManager } from "../util/ts/url-parameter-manager.ts";
 
+type ElementList = { [K: keyof any]: HTMLElement | ElementList };
+
 const url = new URLParameterManager();
 
 export abstract class Submodule {
@@ -21,120 +23,29 @@ export abstract class Submodule {
         tags: { name: string; count: number; }[];
     }[]>;
 
-    element = {
-        input:        getEl<"input">("search-bar", ".input")!,
-        clear:        getEl<"button">("search-bar", ".clear")!,
-        autocomplete: getEl<"ul">("search-bar", ".autocomplete")!,
-        submit:       getEl<"button">("search-bar", ".submit")!,
-        results:      getEl<"ul">("search-results")!
-    };
+    el!: ElementList;
 
     constructor () {
-        this.bindEvents();
+        this.setElements();
     }
 
-    bindEvents() {
-        // window.addEventListener("load", ...) doesnt work for some reason
-        this.displaySearchResults();
+    setElements() {
+        this.el = {
+            search: {
+                input: getEl<"input">("#search-bar .input"),
+                clear: getEl<"button">("#search-bar .clear"),
+                submit: getEl<"button">("#search-bar .submit"),
+                autocomplete: getEl<"ul">("#search-bar .autocomplete")
+            },
+            searchResults: getEl<"ul">("#search-results")
+        };
+    }
 
-        window.addEventListener("error",
-            event => window.alert([
-                `In ${event.filename}:${event.lineno}:${event.colno}:`,
-                event.message
-            ].join("\n"))
-        );
-
-        window.addEventListener("popstate",
-            () => this.displaySearchResults()
-        );
-
-        this.element.input.addEventListener("input",
-            () => this.suggestAutocompletion()
-        );
-
-        this.element.input.addEventListener("keydown",
-            event => event.key === "Enter" && this.submitSearch()
-        );
-        this.element.submit.addEventListener("click",
-            () => this.submitSearch()
-        );
+    getAutocompleteWord() {
     }
 
     async suggestAutocompletion() {
-        const query = this.element.input.value;
-        if (!query) {
-            this.element.autocomplete.replaceChildren();
-            return;
-        }
 
-        const results = await this.autocomplete(query);
-        
-        if (!results.length) {
-            this.element.autocomplete.replaceChildren(
-                createEl("li", {
-                    properties: { className: "no-results" },
-                    children: [ "No results!" ]
-                })
-            );
-            return;
-        }
-
-        this.element.autocomplete
-        .replaceChildren(...results.map(tag =>
-            createEl("li", { children: [
-                createEl("span", {
-                    properties: { className: "name" },
-                    children: [ tag.name ]
-                }),
-                createEl("span", {
-                    properties: { className: "count" },
-                    children: [ tag.count ]
-                })
-            ]})
-        ));
-    }
-
-    async submitSearch() {
-        this.element.results.replaceChildren();
-        const query = this.element.input.value;
-
-        url.set({ q: query });
-        this.displaySearchResults();
-    }
-
-    async displaySearchResults() {
-        const query = url.getParams().get("q") ?? "";
-        this.element.input.value = query;
-        const results = await this.search(query);
-
-        this.element.results
-        .replaceChildren(...results.map(post =>
-            createEl("li", {
-                properties: {
-                    className: post.type,
-                    title: `${post.id}: ${post.tags
-                        .map(t => `${t.name} (${t.count})`)
-                        .join(", ")
-                    }`
-                },
-                children: [ createEl("a", {
-                    properties: { href: post.href },
-                    children: [
-                        createEl("img", {
-                            properties: {
-                                className: "thumb",
-                                src: post.thumbnail
-                            }
-                        }),
-                        createEl("img", {
-                            properties: {
-                                className: "preview",
-                                src: post.preview
-                            }
-                        })
-                    ]
-                })]
-            }
-        )));
+        const results = await this.autocomplete();
     }
 }
