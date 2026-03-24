@@ -1,0 +1,44 @@
+@import "../../util/less/unit.less";
+
+search > fieldset#page-flipper {
+    display: flex;
+    margin: 0;
+    padding: (50 / @unit) 0;
+    width: 100%;
+    z-index: 2;
+
+    flex-direction: row;
+    justify-content: center;
+    gap: (10 / @unit);
+
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    border: none;
+    background-image: linear-gradient(
+        to bottom,
+        transparent,
+        #0008
+    );
+
+    min-inline-size: unset;
+
+    > button.prev {
+        order: 1;
+    }
+    > button.next {
+        order: 3;
+    }
+    > input.input {
+        order: 2;
+        
+        // -moz-appearance: textfield;
+        appearance: textfield;
+        // &::-webkit-outer-spin-button,
+        // &::-webkit-inner-spin-button {
+        //     -webkit-appearance: none;
+        //     margin: 0;
+        // }
+    }
+}
