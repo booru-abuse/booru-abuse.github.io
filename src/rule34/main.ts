@@ -1,5 +1,7 @@
+// //@ts-ignore TS6059
+// import * as Boorujs from "../../../booru.js/src/index.ts"; // for debugging
 //@ts-expect-error TS2307
-import * as Boorujs from "https://esm.sh/gh/boorujs/booru.js@8c561f1/src/index.ts.mjs?target=es2022";
+import * as Boorujs from "https://esm.sh/gh/boorujs/booru.js@f1b1ba6/src/index.ts.mjs?target=es2022";
 import { Submodule } from "../all/template-class.ts";
 
 const { Rule34 } = Boorujs;
@@ -52,16 +54,16 @@ new class Rule34Module extends Submodule {
             page: page,
             perPage: 42
         }).then((search: any) => search.results.map((post: any) => ({
-            thumbnail: post.file.thumbnail.url,
+            thumbnail: post.file.preview.url,
             preview: post.file.type === Boorujs.MediaType.Video
-                ? post.file.downsample.url
+                ? post.file.sample.url
                 : post.file.url,
             href: post.file.url + "?" + post.id,
             type: ({
                 [Boorujs.MediaType.Static]: "static",
                 [Boorujs.MediaType.Animated]: "animated",
                 [Boorujs.MediaType.Video]: "video",
-            })[post.file.type],
+            } as any)[post.file.type],
             id: post.id,
             tags: post.tags.artist.map(
                 (tag: any) => ({ name: tag.name, count: tag.count })
