@@ -38,14 +38,17 @@ export function createEl<T extends keyof HTMLElementTagNameMap>(
             element[key as keyof typeof element] = value
         );
 
-    if (options.on)
-        Object.entries(options.on).forEach(([key, value]) =>
-            element.addEventListener(key, value as EventListenerOrEventListenerObject, false)
+    const bindEvents = (eventsObject: any, once: boolean) =>
+        eventsObject && Object.entries(eventsObject).forEach(([key, value]) =>
+            element.addEventListener(
+                key,
+                value as EventListenerOrEventListenerObject,
+                once
+            )
         );
-    if (options.once)
-        Object.entries(options.once).forEach(([key, value]) =>
-            element.addEventListener(key, value as EventListenerOrEventListenerObject, true)
-        );
+
+    bindEvents(options.on, false);
+    bindEvents(options.once, true);
 
     if (options.children)
         element.replaceChildren(...options.children);
