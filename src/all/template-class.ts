@@ -35,16 +35,14 @@ export abstract class Submodule {
 
     bindEvents() {
         // window.addEventListener("load", ...) doesnt work for some reason
-        const onload = () => {
+        const onLoad = () => {
             const query = url.get("q") ?? "";
             const page = url.get("p") ?? "0";
-            if (query !== null || page !== null) {
-                this.setSearchValues(query);
-                this.setPageValues(page);
-                this.submitSearch(query, page);
-            }
+            this.setSearchValues(query);
+            this.setPageValues(page);
+            this.submitSearch(query, page);
         };
-        onload();
+        onLoad();
 
         window.addEventListener("error",
             e => window.alert([
@@ -118,7 +116,6 @@ export abstract class Submodule {
         const tag = this.getAutocompleteWord();
         if (!tag) {
             this.displayAutocomplete(null);
-            return;
         } else {
             const results = await this.autocomplete(tag);
             this.displayAutocomplete(results);
@@ -143,8 +140,7 @@ export abstract class Submodule {
 
     //#region page flipper
 
-    setPageValues(page: string) {
-        page ??= "0";
+    setPageValues(page?: string) {
         this.el.flipper.input.value = page;
         if (page === "0")
             this.el.flipper.prev.disabled = true;
