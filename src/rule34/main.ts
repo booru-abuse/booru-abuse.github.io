@@ -1,5 +1,7 @@
-import * as Rule34 from "https://esm.sh/gh/boorujs/booru.js@v0.1.0-alpha/src/module/rule34/index.ts.mjs?target=es2022";
+import * as Boorujs from "https://esm.sh/gh/boorujs/booru.js@8c561f1/src/index.ts.mjs?target=es2022";
 import { Submodule } from "../all/template-class.ts";
+
+const { Rule34 } = Boorujs;
 
 window.eval(`\`
 
@@ -36,8 +38,8 @@ try {
 
 new class Rule34Module extends Submodule {
     async autocomplete(query: string) {
-        return await client.autocomplete(query.match(/[^ ]*$/)?.[0])
-        .then((tags: any) => tags.tags.map((tag: any) => ({
+        return await client.autocomplete(query)
+        .then((tags: any) => tags.map((tag: any) => ({
             name: tag.name.replace(/_/g, " "),
             count: tag.count,
             value: tag.name
@@ -48,19 +50,19 @@ new class Rule34Module extends Submodule {
         return await client.search(query, {
             page: page,
             perPage: 42
-        }).then((posts: any) => Array.from(posts).map((post: any) => ({
+        }).then((search: any) => search.results.map((post: any) => ({
             thumbnail: post.file.thumbnail.url,
-            preview: post.file.type === Rule34.PostFileType.Video
+            preview: post.file.type === Boorujs.MediaType.Video
                 ? post.file.downsample.url
                 : post.file.url,
             href: post.file.url + "?" + post.id,
             type: ({
-                [Rule34.PostFileType.Static]: "static",
-                [Rule34.PostFileType.Animated]: "animated",
-                [Rule34.PostFileType.Video]: "video",
+                [Boorujs.MediaType.Static]: "static",
+                [Boorujs.MediaType.Animated]: "animated",
+                [Boorujs.MediaType.Video]: "video",
             })[post.file.type],
             id: post.id,
-            tags: post.tags.ofCategory(Rule34.TagType.Artist).map(
+            tags: post.tags.artist.map(
                 (tag: any) => ({ name: tag.name, count: tag.count })
             )
         })));
