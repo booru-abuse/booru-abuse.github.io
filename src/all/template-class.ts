@@ -150,7 +150,7 @@ export abstract class Submodule {
 
     //#region page flipper
 
-    setPageValues(page?: string) {
+    setPageValues(page: string) {
         this.el.flipper.input.value = page;
         if (page === "0")
             this.el.flipper.prev.disabled = true;
