@@ -9,7 +9,15 @@ export abstract class Submodule {
     abstract autocomplete(query: string): Promise<AutocompleteResult[]>;
     
     /** Method run when post results are searched for. */
-    abstract search(query: string, page: number): Promise<SearchResult[]>;
+    abstract search(
+        query: string,
+        options: {
+            page: number;
+        }
+    ): Promise<SearchResult>;
+
+    /** The amount of posts returned per page. */
+    abstract postPerPage: number;
 
     el = {
         search: {
@@ -148,9 +156,14 @@ export abstract class Submodule {
         this.setPageValues(page);
 
         this.displaySearchResults(null);
-        const results = await this.search(query, parseInt(page));
-        url.set({ q: query, p: page }, results);
-        this.displaySearchResults(results);
+        const search = await this.search(
+            query,
+            {
+                page: parseInt(page)
+            }
+        );
+        url.set({ q: query, p: page }, search);
+        this.displaySearchResults(search);
     }
 
     setSearchValues(query: string) {
@@ -204,19 +217,22 @@ export abstract class Submodule {
             ));
     }
 
-    displaySearchResults(posts: SearchResult[] | null) {
+    displaySearchResults(search: SearchResult | null) {
         const list = this.el.results;
-        if (!posts)
+        const nextButton = this.el.flipper.next;
+        if (!search) {
             list.replaceChildren();
-        else if (!posts.length)
+            nextButton.disabled = true;
+        } else if (!search.results.length) {
             list.replaceChildren(
                 createEl("li", {
                     properties: { className: "no-results" },
                     children: [ "No results!" ]
                 })
             );
-        else
-            list.replaceChildren(...posts.map(post =>
+            nextButton.disabled = true;
+        } else {
+            list.replaceChildren(...search.results.map(post =>
                 createEl("li", {
                     properties: {
                         className: post.type,
@@ -240,5 +256,7 @@ export abstract class Submodule {
                     })]
                 })
             ));
+            nextButton.disabled = !search.nextPageExists;
+        }
     }
 }

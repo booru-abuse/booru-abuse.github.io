@@ -1,7 +1,7 @@
 // //@ts-ignore TS6059
 // import * as Boorujs from "../../../booru.js/src/index.ts"; // for debugging
 //@ts-expect-error TS2307
-import * as Boorujs from "https://esm.sh/gh/boorujs/booru.js@f1b1ba6/src/index.ts.mjs?target=es2022";
+import * as Boorujs from "https://esm.sh/gh/boorujs/booru.js@2defcc1/src/index.ts.mjs?target=es2022";
 import { Submodule } from "../all/template-class.ts";
 
 const { Rule34 } = Boorujs;
@@ -49,25 +49,37 @@ new class Rule34Module extends Submodule {
         })));
     }
 
-    async search(query: string, page: number) {
-        return await client.search(query, {
-            page: page,
-            perPage: 42
-        }).then((search: any) => search.results.map((post: any) => ({
-            thumbnail: post.file.preview.url,
-            preview: post.file.type === Boorujs.MediaType.Video
-                ? post.file.sample.url
-                : post.file.url,
-            href: post.file.url + "?" + post.id,
-            type: ({
-                [Boorujs.MediaType.Static]: "static",
-                [Boorujs.MediaType.Animated]: "animated",
-                [Boorujs.MediaType.Video]: "video",
-            } as any)[post.file.type],
-            id: post.id,
-            tags: post.tags.artist.map(
-                (tag: any) => ({ name: tag.name, count: tag.count })
-            )
-        })));
+    async search(
+        query: string,
+        options: {
+            page: number
+        }
+    ) {
+        const search = await client.search(query, {
+            page: options.page,
+            perPage: this.postPerPage
+        });
+        
+        return {
+            nextPageExists: search.nextPageExists(),
+            results: search.results.map((post: any) => ({
+                thumbnail: post.file.preview.url,
+                preview: post.file.type === Boorujs.MediaType.Video
+                    ? post.file.sample.url
+                    : post.file.url,
+                href: post.file.url + "?" + post.id,
+                type: ({
+                    [Boorujs.MediaType.Static]: "static",
+                    [Boorujs.MediaType.Animated]: "animated",
+                    [Boorujs.MediaType.Video]: "video",
+                } as any)[post.file.type],
+                id: post.id,
+                tags: post.tags.artist.map(
+                    (tag: any) => ({ name: tag.name, count: tag.count })
+                )
+            }))
+        };
     }
+
+    postPerPage = 42;
 }

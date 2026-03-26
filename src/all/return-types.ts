@@ -5,10 +5,13 @@ export interface AutocompleteResult {
 }
 
 export interface SearchResult {
-    thumbnail: string;
-    preview: string;
-    href: string;
-    type: "static" | "animated" | "video";
-    id: string | number;
-    tags: { name: string; count: number; }[];
+    nextPageExists: boolean;
+    results: {
+        thumbnail: string;
+        preview: string;
+        href: string;
+        type: "static" | "animated" | "video";
+        id: string | number;
+        tags: { name: string; count: number; }[];
+    }[];
 }
