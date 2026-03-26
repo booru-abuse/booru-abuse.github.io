@@ -201,7 +201,7 @@ export abstract class Submodule {
             list.replaceChildren(...tags.map((tag) =>
                 createEl("li", {
                     once: {
-                        "click": () => this.autocompleteWord(tag.value),
+                        "click": () => this.autocompleteWord(tag.value)
                     },
                     children: [
                         createEl("span", {
