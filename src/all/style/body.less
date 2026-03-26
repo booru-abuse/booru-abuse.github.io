@@ -1,19 +1,10 @@
-@import "../../util/less/unit.less";
-
 body {
-    padding: (100 / @unit) (50 / @unit);
+    padding: 100px 50px;
     margin: 0;
 
-    background-image: linear-gradient(
-        to bottom right,
-        var(--accent-color-dark-6),
-        70%,
-        var(--accent-color-light-3)
-    );
-    background-size: cover;
-    background-attachment: fixed;
+    background-color: var(--background-color);
 
-    color: white;
+    color: var(--text-color-light);
     font-family:
         "IBM Plex Sans",
         "Segoe UI",
@@ -30,6 +21,6 @@ body {
     > search {
         display: flex;
         flex-direction: column;
-        gap: (50 / @unit);
+        gap: 50px;
     }
 }

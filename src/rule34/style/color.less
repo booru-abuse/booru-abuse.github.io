@@ -1,0 +1,22 @@
+@accent: #26e934;
+// @accent: #499a43;
+:root {
+    --background-color: darken(spin(@accent, 30), 90%, relative);
+    --text-color-light: white;
+    --text-color-dark: darken(spin(@accent, 30), 90%, relative);
+
+    --button-background: darken(spin(@accent, 5), 20%, relative);
+    --button-background-active: darken(spin(@accent, 20), 70%, relative);
+
+    --search-bar-background: lighten(spin(@accent, -6), 60%, relative);
+    --search-bar-background-focus: #FFC;
+    --autocomplete-no-results-text: #4a072c;
+    --autocomplete-no-results-background: #f8bac1;
+
+    --search-result-background-static: darken(spin(@accent, 20), 70%, relative);
+    --search-result-border-static: #FFF1;
+    --search-result-background-animated: #074188;
+    --search-result-border-animated: #5bb8fb;
+    --search-result-background-video: #4c17ef;
+    --search-result-border-video: #270786;
+}

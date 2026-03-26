@@ -1,8 +1,3 @@
-@import "../../util/less/unit.less";
-
-// TODO: implement autocomplete color vars
-@bg-color: #FFC;
-
 /****** Full search bar ******/
 search > fieldset#search-bar {
     display: flex;
@@ -12,7 +7,7 @@ search > fieldset#search-bar {
 
     flex-direction: row;
     justify-content: center;
-    gap: (10 / @unit);
+    gap: 10px;
 
     border: none;
 
@@ -23,22 +18,15 @@ search > fieldset#search-bar {
         display: flex;
 
         position: relative;
-        color: black;
-        padding: (2 / @unit) (6 / @unit);
-        background-image: linear-gradient(
-            to bottom,
-            var(--accent-color-light-3),
-            white
-        );
-        background-size: cover;
-        box-sizing: border-box;
-        border: (2 / @unit) solid var(--accent-color-light-3);
-        // border-radius: (8 / @unit);
+        color: var(--text-color-dark);
+        padding: 2px 6px;
+        background-color: var(--search-bar-background);
+        border: none;
 
         > input.input {
-            width: (300 / @unit);
-            @media (max-width: (500 / @unit)) {
-                width: (200 / @unit);
+            width: 300px;
+            @media (max-width: 500px) {
+                width: 200px;
             }
 
             padding: 0;
@@ -49,30 +37,23 @@ search > fieldset#search-bar {
             font-family: inherit;
             font-size: inherit;
             color: inherit;
-            line-height: (16 / @unit);
+            line-height: 1em;
         }
 
         > ul.autocomplete {
             z-index: 2;
 
             width: 100%;
-            padding: (2 / @unit) (6 / @unit);
+            padding: 2px 6px;
             margin: 0;
-            display: none; // set to "block" when input:focus
+            display: none;
 
             position: absolute;
-            @_top: (14 / @unit);
-            top: calc(100% + @_top);
+            top: calc(100% + 14px);
             left: 0;
 
-            box-sizing: border-box;
-            background-image: linear-gradient(
-                to bottom,
-                desaturate(darken(spin(@bg-color, -5), 10%, relative), 10%, relative),
-                @bg-color
-            );
-            border: (2 / @unit) solid darken(spin(@bg-color, -5), 20%, relative);
-            // border-radius: (8 / @unit);
+            background-color: var(--search-bar-background-focus);
+            border: none;
 
             /*** Arrow ***/
             &::after {
@@ -82,18 +63,17 @@ search > fieldset#search-bar {
 
                 position: absolute;
                 bottom: 100%;
-                left: (6 / @unit);
+                left: 6px;
 
-                border-width: 0 (10 / @unit) (10 / @unit);
+                border-width: 0 10px 10px;
                 border-style: solid;
                 border-color:
-                    desaturate(darken(spin(@bg-color, -5), 10%, relative), 10%, relative)
+                    var(--search-bar-background-focus)
                     transparent;
             }
 
             /* Maintain visibility when input focus is lost and mouse is still
-             * hovering over element
-             */
+             * hovering over element */
             &:hover {
                 display: block;
             }
@@ -128,28 +108,20 @@ search > fieldset#search-bar {
 
             /*** Results are pending ***/
             &.loading {
-                background-image: linear-gradient(
-                    to bottom,
-                    var(--accent-color-light-3),
-                    var(--accent-color-light-4)
-                );
-                border-color: var(--accent-color-light-3);
+                background-color: var(--search-bar-background);
                 &::after {
-                    border-color: var(--accent-color-light-3) transparent;
+                    border-color: var(--search-bar-background) transparent;
                 }
             }
 
             /*** No results ***/
             &:has(li.no-results) {
-                color: #4a072c;
-                background-image: linear-gradient(
-                    to bottom,
-                    #f8bac1,
-                    white
-                );
-                border-color: #f8bac1;
+                color: var(--autocomplete-no-results-text);
+                background-color: var(--autocomplete-no-results-background);
                 &::after {
-                    border-color: #f8bac1 transparent;
+                    border-color:
+                        var(--autocomplete-no-results-background)
+                        transparent;
                 }
                 > li {
                     display: block;
@@ -160,17 +132,7 @@ search > fieldset#search-bar {
 
         /**** Input element is focused ****/
         &:has(input.input:focus) {
-            /* box-shadow:
-                0 (1 / @unit)
-                (5 / @unit)
-                (3 / @unit)
-                fade(@bg-color, 68%); */ // 0x44 = 68
-            background-image: linear-gradient(
-                to bottom,
-                desaturate(darken(spin(@bg-color, -5), 10%, relative), 10%, relative),
-                @bg-color
-            );
-            border-color: darken(spin(@bg-color, -5), 20%, relative);
+            background-color: var(--search-bar-background-focus);
 
             > ul.autocomplete {
                 display: block; // only visible when focused

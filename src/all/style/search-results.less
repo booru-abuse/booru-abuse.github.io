@@ -1,35 +1,25 @@
-@import "../../util/less/unit.less";
-
 ul#search-results {
     margin: 0 5%;
     padding: 0;
     display: grid;
-    gap: (8 / @unit);
+    gap: 8px;
     grid-template-columns: repeat(
         auto-fill,
         minmax(min(
             calc((100% - ($gap * 2)) / 3),
-            (150 / @unit)
+            150px
         ), 1fr)
     );
 
     > li {
         z-index: 0;
-        // @_max-width: ((8 / @unit) * 2);
-        // max-width: calc((100% - @_max-width) / 3);
         aspect-ratio: 1 / 1;
         display: flex;
         justify-content: center;
 
-        position: relative;
+        border-style: solid;
 
-        background-image: linear-gradient(
-            to bottom,
-            var(--bg-up),
-            var(--bg-dn)
-        );
-        border: solid (1 / @unit) var(--border-color);
-        // border-radius: (8 / @unit);
+        position: relative;
 
         img {
             object-fit: contain;
@@ -41,23 +31,22 @@ ul#search-results {
         }
 
         &, &.static {
-            --border-color: #FFF1;
-            --bg-up: var(--accent-color-dark-5);
-            --bg-dn: var(--accent-color-dark-4);
+            background-color: var(--search-result-background-static);
+            border-color: var(--search-result-border-static);
+            border-width: 1px;
         }
 
         &.animated {
-            --border-color: #5bb8fb;
-            --bg-up: #053157;
-            --bg-dn: #074188;
+            background-color: var(--search-result-background-animated);
+            border-color: var(--search-result-border-animated);
+            border-width: 2px;
         }
 
         &.video {
-            --border-color: #4c17ef;
-            --bg-up: #190555;
-            --bg-dn: #270786;
+            background-color: var(--search-result-background-video);
+            border-color: var(--search-result-border-video);
+            border-width: 2px;
         }
-
         
         .thumb { display: block; }
         .preview { display: none; }
@@ -65,18 +54,11 @@ ul#search-results {
         @media (hover: hover) {
             &:hover {
                 transform: scale(1.25);
-                filter: drop-shadow(0 10px 30px #0008);
+                filter: drop-shadow(0 10px 30px var(--search-result-hover-shadow));
                 z-index: 1;
 
                 .thumb { display: none; }
                 .preview { display: block; }
-            }
-
-            &:active {
-                --border-color: #FFF3;
-                transform: scale(1.1) rotate(2deg);
-                filter: drop-shadow(0 (10 / @unit) (30 / @unit) #FFF3);
-                z-index: 1;
             }
         }
     }

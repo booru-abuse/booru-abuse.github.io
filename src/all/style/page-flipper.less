@@ -1,15 +1,13 @@
-@import "../../util/less/unit.less";
-
 search > fieldset#page-flipper {
     display: flex;
     margin: 0;
-    padding: (50 / @unit) 0;
+    padding: 50px 0;
     width: 100%;
     z-index: 2;
 
     flex-direction: row;
     justify-content: center;
-    gap: (10 / @unit);
+    gap: 10px;
 
     position: fixed;
     left: 0;
@@ -19,7 +17,7 @@ search > fieldset#page-flipper {
     background-image: linear-gradient(
         to bottom,
         transparent,
-        #0008
+        var(--page-flipper-shadow)
     );
 
     min-inline-size: unset;
@@ -33,12 +31,6 @@ search > fieldset#page-flipper {
     > input.input {
         order: 2;
         
-        // -moz-appearance: textfield;
         appearance: textfield;
-        // &::-webkit-outer-spin-button,
-        // &::-webkit-inner-spin-button {
-        //     -webkit-appearance: none;
-        //     margin: 0;
-        // }
     }
 }
